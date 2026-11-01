@@ -1,0 +1,9 @@
+import { useState } from 'react'
+import api from '../api'
+
+export default function Settings(){
+ const [form,setForm]=useState({current_password:'',new_password:'',confirm_password:''}); const [message,setMessage]=useState(''); const [error,setError]=useState(''); const [busy,setBusy]=useState(false)
+ const change=(e)=>setForm({...form,[e.target.name]:e.target.value})
+ async function submit(e){e.preventDefault();setBusy(true);setMessage('');setError('');try{const r=await api.post('/auth/change-password/',form);setMessage(r.data.detail||'Password changed. Please sign in again.');localStorage.removeItem('access');localStorage.removeItem('refresh');setTimeout(()=>window.location.assign('/login'),1200)}catch(err){const d=err.response?.data;setError(Object.values(d||{}).flat().join(' ')||'Unable to change password.')}finally{setBusy(false)}}
+ return <div><div className="page-heading"><div><p className="eyebrow">HR WORKSPACE</p><h1>Settings</h1><p className="muted">Manage your administrator account security.</p></div></div><div className="panel" style={{maxWidth:680,padding:24}}><h2>Change administrator password</h2><p className="muted">This updates the same Django user account used by the React dashboard and Django Admin.</p><form onSubmit={submit} className="form-grid" style={{marginTop:20}}>{[['current_password','Current password'],['new_password','New password'],['confirm_password','Confirm new password']].map(([name,label])=><div className="form-field wide" key={name}><label>{label}</label><input type="password" name={name} value={form[name]} onChange={change} autoComplete="new-password" required minLength={8}/></div>)}{error&&<div className="error-banner wide">{error}</div>}{message&&<div className="success-banner wide">{message}</div>}<div className="modal-actions wide"><button className="primary-btn" disabled={busy}>{busy?'Updating…':'Change password'}</button></div></form></div></div>
+}
