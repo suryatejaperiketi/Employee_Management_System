@@ -1,12 +1,15 @@
 
 import secrets
+import os
+import json
+import logging
 from datetime import timedelta
 
-from django.conf import settings
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.password_validation import validate_password
-from django.core.mail import send_mail
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
 from django.db import transaction
@@ -34,6 +37,54 @@ from .serializers import (
     VerifyOTPSerializer,
     ResetPasswordSerializer,
 )
+
+
+
+logger = logging.getLogger(__name__)
+
+
+def send_brevo_email(to_email, recipient_name, otp):
+    """Send a transactional email through Brevo's HTTP API."""
+    api_key = os.getenv("BREVO_API_KEY")
+    sender_email = os.getenv("BREVO_SENDER_EMAIL")
+    sender_name = os.getenv("BREVO_SENDER_NAME", "HR Management System")
+
+    if not api_key or not sender_email:
+        raise RuntimeError("Brevo email configuration is missing.")
+
+    payload = {
+        "sender": {"name": sender_name, "email": sender_email},
+        "to": [{"email": to_email, "name": recipient_name}],
+        "subject": "HR Management System - Password Reset OTP",
+        "textContent": (
+            f"Hello {recipient_name},\\n\\n"
+            f"Your password reset OTP is: {otp}\\n\\n"
+            "This OTP expires in 5 minutes.\\n"
+            "Please do not share this OTP with anyone."
+        ),
+    }
+
+    request = Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "accept": "application/json",
+            "api-key": api_key,
+            "content-type": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urlopen(request, timeout=20) as response:
+            return response.status
+    except HTTPError as exc:
+        details = exc.read().decode("utf-8", errors="replace")
+        logger.error("Brevo API returned HTTP %s: %s", exc.code, details)
+        raise
+    except URLError:
+        logger.exception("Unable to connect to Brevo API.")
+        raise
 
 
 # =====================================================
@@ -565,20 +616,13 @@ class ForgotPasswordView(APIView):
         )
 
         try:
-            send_mail(
-                subject="HR Management System - Password Reset OTP",
-                message=(
-                    f"Hello {user.first_name or user.username},\n\n"
-                    f"Your password reset OTP is: {otp}\n\n"
-                    "This OTP expires in 5 minutes.\n"
-                    "Please do not share this OTP with anyone."
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False
+            send_brevo_email(
+                to_email=user.email,
+                recipient_name=user.first_name or user.username,
+                otp=otp,
             )
-
         except Exception:
+            logger.exception("Failed to send password-reset OTP through Brevo.")
             PasswordResetOTP.objects.filter(user=user).delete()
 
             return Response(
