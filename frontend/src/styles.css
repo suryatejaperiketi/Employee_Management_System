@@ -112,3 +112,92 @@
   .employee-shell .page-content{padding:20px 15px}
   .employee-shell .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* =========================================================
+   EMPLOYEE PORTAL — MOBILE-FIRST RESPONSIVE IMPROVEMENTS
+   Desktop layout remains unchanged.
+   ========================================================= */
+.employee-shell{overflow-x:clip}
+.employee-shell .page-content{min-width:0}
+.employee-shell .panel{min-width:0}
+.employee-shell .table-scroll{-webkit-overflow-scrolling:touch}
+.employee-shell .employee-service-grid{display:grid}
+
+@media (max-width:760px){
+  .employee-shell .sidebar{
+    position:relative;inset:auto;transform:none;width:100%;height:auto;min-height:0;
+    padding:10px 14px 8px;background:#fff;border:0;border-bottom:1px solid #e8edf4;
+    box-shadow:0 2px 10px #0f172a08;z-index:30
+  }
+  .employee-shell .brand{padding:2px 4px 8px;font-size:19px}
+  .employee-shell .brand-mark{height:34px;width:34px}
+  .employee-shell .nav-label,.employee-shell .sidebar-bottom{display:none}
+  .employee-shell .sidebar nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;
+    width:100%;padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+    margin:0;background:rgba(255,255,255,.98);border-top:1px solid #e5eaf2;
+    box-shadow:0 -5px 20px #0f172a0b;overflow:visible
+  }
+  .employee-shell .sidebar nav .nav-link{
+    width:100%;min-width:0;min-height:52px;margin:0;padding:5px 1px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    border-radius:9px;white-space:normal;text-align:center;font-size:9px;
+    line-height:1.15;font-weight:600;color:#64748b
+  }
+  .employee-shell .sidebar nav .nav-link svg{width:18px;height:18px;flex:0 0 auto}
+  .employee-shell .sidebar nav .nav-link span{display:block;max-width:100%;overflow-wrap:anywhere}
+  .employee-shell .sidebar nav .nav-link.active{background:#edf3ff;color:#2563eb}
+  .employee-shell .main-area,.employee-shell .sidebar.collapsed~.main-area{margin-left:0;min-width:0}
+  .employee-shell .topbar{height:48px;padding:0 16px;background:#f5f7fb;border-bottom:0}
+  .employee-shell .top-user{gap:0}
+  .employee-shell .top-user .avatar{width:30px;height:30px;flex-basis:30px}
+  .employee-shell .page-content{padding:17px 13px calc(88px + env(safe-area-inset-bottom));width:100%;}
+  .employee-shell .page-heading{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-bottom:18px}
+  .employee-shell .page-heading h1{font-size:23px;line-height:1.25;letter-spacing:-.5px;margin:5px 0 6px}
+  .employee-shell .page-heading .muted{font-size:13px}
+  .employee-shell .page-heading>.secondary-btn{align-self:flex-start;min-height:42px;padding:10px 13px}
+  .employee-shell .eyebrow{font-size:10px;letter-spacing:1px;margin-left:0}
+  .employee-shell .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:17px}
+  .employee-shell .stat-card{min-height:112px;padding:14px;border-radius:13px}
+  .employee-shell .stat-label{font-size:12px;line-height:1.35}
+  .employee-shell .stat-value{font-size:27px;line-height:1.2;margin-top:7px}
+  .employee-shell .panel{padding:15px;border-radius:13px;margin-bottom:14px}
+  .employee-shell .panel h2{font-size:19px;line-height:1.3}
+  .employee-shell .panel h3{font-size:15px}
+  .employee-shell .panel .muted{font-size:12px;overflow-wrap:anywhere}
+  .employee-shell .panel .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:12px 10px;margin-top:15px !important}
+  .employee-shell .panel .stats-grid>div{min-width:0;display:flex;flex-direction:column;gap:4px}
+  .employee-shell .panel .stats-grid small{font-size:10px;line-height:1.3;overflow-wrap:anywhere}
+  .employee-shell .panel .stats-grid strong{font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+  .employee-shell .table-panel{padding:0}
+  .employee-shell .table-panel>.panel-head{padding:15px}
+  .employee-shell .table-scroll{width:100%;overflow-x:auto}
+  .employee-shell table{min-width:590px}
+  .employee-shell th{padding:11px 12px;font-size:11px}
+  .employee-shell td{padding:12px;font-size:12px}
+  .employee-shell .form-grid{grid-template-columns:minmax(0,1fr);gap:13px}
+  .employee-shell .form-field.wide{grid-column:auto}
+  .employee-shell .form-field input,.employee-shell .form-field select,.employee-shell .form-field textarea,
+  .employee-shell input.date-filter{min-height:44px;font-size:16px;max-width:100%;width:100%}
+  .employee-shell .form-field textarea{min-height:100px}
+  .employee-shell .primary-btn,.employee-shell .secondary-btn{min-height:44px;font-size:13px}
+  .employee-shell .modal-actions{flex-wrap:wrap;justify-content:stretch}
+  .employee-shell .modal-actions button{flex:1 1 130px}
+  .employee-shell .password-input-wrapper input{padding-right:55px}
+  .employee-shell .error-banner,.employee-shell .success-banner{overflow-wrap:anywhere;line-height:1.45}
+}
+
+@media (max-width:380px){
+  .employee-shell .page-content{padding-left:11px;padding-right:11px}
+  .employee-shell .sidebar nav{padding-left:2px;padding-right:2px}
+  .employee-shell .sidebar nav .nav-link{font-size:8px}
+  .employee-shell .sidebar nav .nav-link svg{width:17px;height:17px}
+  .employee-shell .stat-card{padding:12px;min-height:104px}
+  .employee-shell .stat-value{font-size:25px}
+}
+
+@media (min-width:761px) and (max-width:1100px){
+  .employee-shell .page-content{padding:26px 22px}
+  .employee-shell .panel .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+}
