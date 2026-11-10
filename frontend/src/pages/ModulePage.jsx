@@ -104,9 +104,44 @@ export default function ModulePage({ title, user }) {
 
   async function save(e) {
     e.preventDefault(); setSaving(true); setError('')
-    const payload = {...form}
-    if (title==='Attendance' && ['Absent','On Leave','Holiday'].includes(payload.status)) { payload.check_in=null; payload.check_out=null; payload.working_hours=0 }
-    cfg.fields.forEach(([key,,type])=>{ if (type==='number' && payload[key] !== '') payload[key]=Number(payload[key]); if (payload[key]==='') delete payload[key] })
+
+
+const payload = {...form};
+
+// Attendance handling
+if (
+  title === 'Attendance' &&
+  ['Absent', 'On Leave', 'Holiday'].includes(payload.status)
+) {
+  payload.check_in = null;
+  payload.check_out = null;
+  payload.working_hours = 0;
+}
+
+// Holiday handling
+if (title === 'Holidays') {
+  if (payload.scope === 'All') {
+    payload.department = null;
+  } else if (!payload.department) {
+    setError('Please select a department for department-specific holidays.');
+    setSaving(false);
+    return;
+  }
+}
+
+// Convert number fields and remove other empty fields
+cfg.fields.forEach(([key, , type]) => {
+  if (type === 'number' && payload[key] !== '') {
+    payload[key] = Number(payload[key]);
+  }
+
+  if (payload[key] === '' && !(title === 'Holidays' && key === 'department')) {
+    delete payload[key];
+  }
+});
+
+
+
     try {
       if (editing) await api.patch(`${cfg.endpoint}${editing.id}/`,payload)
       else await api.post(cfg.endpoint,payload)
