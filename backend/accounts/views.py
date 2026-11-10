@@ -822,3 +822,33 @@ class ResetPasswordView(APIView):
         return Response({
             "detail": "Password reset successfully. Please sign in with your new password."
         })
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            u = request.user
+
+            employee = Employee.objects.filter(user=u).first()
+
+            return Response({
+                "id": u.id,
+                "username": u.username,
+                "first_name": u.first_name,
+                "last_name": u.last_name,
+                "full_name": u.get_full_name() or u.username,
+                "email": u.email,
+                "is_staff": u.is_staff,
+                "role": "HR Admin" if u.is_staff else "Employee",
+                "must_change_password": (
+                    employee.must_change_password if employee else False
+                ),
+            })
+
+        except Exception:
+            logger.exception("Error in MeView")
+            return Response(
+                {"detail": "Unable to load account profile."},
+                status=500
+            )
